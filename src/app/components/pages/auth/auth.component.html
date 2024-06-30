@@ -1,0 +1,37 @@
+<div class="container flex items-center justify-center">
+  <form (ngSubmit)="submit()" class="w-[500px] flex flex-col gap-4 px-4">
+    <div class="text-3xl font-medium">Авторизация</div>
+    <mat-form-field>
+      <mat-label>Введите email</mat-label>
+      <input
+        (blur)="updateErrorMessage(email)"
+        [formControl]="email"
+        matInput
+        placeholder="pat@example.com"
+        required
+      />
+      @if (email.invalid) {
+        <mat-error class="error-message">{{ errors.get(email)() }}</mat-error>
+      }
+
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Введите пароль</mat-label>
+      <input
+        (blur)="updateErrorMessage(password)"
+        [formControl]="password"
+        matInput
+        placeholder="password"
+        required
+        type="password"
+      />
+      @if (password.invalid) {
+        <mat-error class="error-message">{{ errors.get(password)() }}</mat-error>
+      }
+
+    </mat-form-field>
+
+    <button [disabled]="disabledButton" class="min-h-14 mt-2" mat-stroked-button type="submit">Вход</button>
+  </form>
+</div>

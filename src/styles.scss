@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  @apply h-full;
+}
+
+body {
+  @apply bg-bgPrimary relative text-textLight;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.container {
+  @apply max-w-5xl m-auto h-full;
+}
+
+
+.mat-mdc-form-field-error-wrapper.mat-mdc-form-field-error-wrapper {
+  @apply static px-0;
+}
+
+.mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+  @apply block h-auto fixed mt-2;
+}
