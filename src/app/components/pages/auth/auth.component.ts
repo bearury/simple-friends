@@ -54,8 +54,6 @@ export class AuthComponent implements OnInit {
 
 
     this.loaderService.loading$.subscribe((isLoading) => {
-      console.log('🍁: ', isLoading)
-
       this.loading.set(isLoading)
     });
 
