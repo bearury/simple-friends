@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -30,17 +30,16 @@ export class AuthComponent implements OnInit {
   readonly confirmPassword = new FormControl<string | null>('', [
     Validators.required]);
 
+  readonly loaderService = inject(LoaderService)
+
   isLoginPage = false
-
   disabledButton = true
-
   errors = new Map();
 
   constructor(
     readonly authService: AuthService,
     readonly router: Router,
     readonly activatedRoute: ActivatedRoute,
-    readonly loaderService: LoaderService
   ) {
     merge(this.email.statusChanges, this.email.valueChanges)
       .pipe(takeUntilDestroyed())
@@ -58,16 +57,16 @@ export class AuthComponent implements OnInit {
     this.errors.set(this.confirmPassword, signal(''))
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isLoginPage = this.activatedRoute.snapshot.url[0].path === RouterPath.Login;
   }
 
-  handleChangePage() {
+  handleChangePage(): void {
     this.router.navigate([this.isLoginPage ? RouterPath.Signup : RouterPath.Login]);
   }
 
 
-  updateErrorMessage(form: FormControl<string | null>) {
+  updateErrorMessage(form: FormControl<string | null>): void {
     const error = form.hasError('required')
     if (error) {
       this.errors.get(form).set('Поле не может быть пустым');
@@ -78,18 +77,26 @@ export class AuthComponent implements OnInit {
     } else if (form.hasError('pattern')) {
       this.errors.get(form).set('Пароль должен быть не менне 6 символов, содержать cпец.символы и буквы латинского алфавита');
     } else if (this.password && this.confirmPassword && this.password.value !== this.confirmPassword.value) {
-      this.confirmPassword.setErrors(['test'])
       this.errors.get(form).set('Пароли должны совпадать');
     }
 
-    this.disabledButton = !(this.email.status === 'VALID' && this.password.status === 'VALID');
+
+    this.disabledButton = !(this.email.status === 'VALID' && this.password.status === 'VALID') ||
+      (!this.isLoginPage && this.password.value !== this.confirmPassword.value);
   }
 
-  submit() {
+  submit(): void {
     if (this.email.value && this.password.value) {
-      this.authService.login({email: this.email.value, password: this.password.value}).subscribe(() => {
-        this.router.navigate([''])
-      })
+
+      if (this.isLoginPage) {
+        this.authService.login({email: this.email.value, password: this.password.value}).subscribe(() => {
+          this.router.navigate([''])
+        })
+      } else {
+        this.authService.signin({email: this.email.value, password: this.password.value}).subscribe(() => {
+          this.router.navigate([''])
+        })
+      }
     } else {
       throw Error('Email or password is empty');
     }
