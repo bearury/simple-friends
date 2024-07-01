@@ -9,12 +9,13 @@ import {AuthService} from "../../../services/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LoaderService} from "../../../services/loader.service";
 import {RouterPath} from "../../../app.routes";
+import {NgIf} from "@angular/common";
 
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule],
+  imports: [MatFormFieldModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule, NgIf],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +27,8 @@ export class AuthComponent implements OnInit {
     Validators.required,
     Validators.pattern(/^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/)]
   );
+  readonly confirmPassword = new FormControl<string | null>('', [
+    Validators.required]);
 
   isLoginPage = false
 
@@ -45,13 +48,22 @@ export class AuthComponent implements OnInit {
     merge(this.password.statusChanges, this.password.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.updateErrorMessage(this.password));
+    merge(this.confirmPassword.statusChanges, this.confirmPassword.valueChanges)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.updateErrorMessage(this.confirmPassword));
+
 
     this.errors.set(this.email, signal(''))
     this.errors.set(this.password, signal(''))
+    this.errors.set(this.confirmPassword, signal(''))
   }
 
   ngOnInit() {
     this.isLoginPage = this.activatedRoute.snapshot.url[0].path === RouterPath.Login;
+  }
+
+  handleChangePage() {
+    this.router.navigate([this.isLoginPage ? RouterPath.Signup : RouterPath.Login]);
   }
 
 
@@ -65,6 +77,9 @@ export class AuthComponent implements OnInit {
       this.errors.get(form).set('Email должен быть корректным');
     } else if (form.hasError('pattern')) {
       this.errors.get(form).set('Пароль должен быть не менне 6 символов, содержать cпец.символы и буквы латинского алфавита');
+    } else if (this.password && this.confirmPassword && this.password.value !== this.confirmPassword.value) {
+      this.confirmPassword.setErrors(['test'])
+      this.errors.get(form).set('Пароли должны совпадать');
     }
 
     this.disabledButton = !(this.email.status === 'VALID' && this.password.status === 'VALID');

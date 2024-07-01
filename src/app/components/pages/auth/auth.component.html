@@ -7,7 +7,7 @@
         (blur)="updateErrorMessage(email)"
         [formControl]="email"
         matInput
-        placeholder="pat@example.com"
+        placeholder="example@example.com"
         required
       />
       @if (email.invalid) {
@@ -22,7 +22,7 @@
         (blur)="updateErrorMessage(password)"
         [formControl]="password"
         matInput
-        placeholder="password"
+        placeholder="Пароль"
         required
         type="password"
       />
@@ -32,11 +32,36 @@
 
     </mat-form-field>
 
+    <mat-form-field *ngIf="!isLoginPage">
+      <mat-label>Повторите пароль</mat-label>
+      <input
+        (blur)="updateErrorMessage(confirmPassword)"
+        [formControl]="confirmPassword"
+        matInput
+        placeholder="Повторите пароль"
+        required
+        type="password"
+      />
+      @if (confirmPassword.invalid) {
+        <mat-error class="error-message">{{ errors.get(confirmPassword)() }}</mat-error>
+      }
+
+    </mat-form-field>
+
+    <div class="text-gray-500/50">
+      <span>{{ isLoginPage ? 'Если нет аккаунта' : 'Если есть аккаунт' }}</span>
+      <button
+        (click)="handleChangePage()"
+        class="px-2 underline hover:text-textLight transition-colors"
+      >{{ isLoginPage ? 'Регистрация' : 'Вход' }}
+      </button>
+    </div>
+
     <button
       [disabled]="disabledButton || loaderService.getLoading()"
       class="min-h-14 mt-2" mat-stroked-button type="submit"
     >
-      {{ loaderService.getLoading() ? 'Загрузка...' : 'Вход' }}
+      {{ loaderService.getLoading() ? 'Загрузка...' : isLoginPage ? 'Вход' : 'Регистрация' }}
     </button>
 
   </form>

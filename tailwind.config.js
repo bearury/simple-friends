@@ -3,6 +3,7 @@
 const colors = {
   bgPrimary: '#1e1a1d',
   textLight: '#f4b29f',
+  middle: '#810081'
 };
 
 module.exports = {
