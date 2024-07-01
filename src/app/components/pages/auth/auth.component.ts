@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal} from '@angular/core';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -30,16 +30,17 @@ export class AuthComponent implements OnInit {
   readonly confirmPassword = new FormControl<string | null>('', [
     Validators.required]);
 
-  readonly loaderService = inject(LoaderService)
-
   isLoginPage = false
   disabledButton = true
   errors = new Map();
+  loading = signal(false)
 
   constructor(
     readonly authService: AuthService,
     readonly router: Router,
     readonly activatedRoute: ActivatedRoute,
+    private loaderService: LoaderService,
+    private cdr: ChangeDetectorRef
   ) {
     merge(this.email.statusChanges, this.email.valueChanges)
       .pipe(takeUntilDestroyed())
@@ -51,6 +52,10 @@ export class AuthComponent implements OnInit {
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.updateErrorMessage(this.confirmPassword));
 
+
+    this.loaderService.loading$.subscribe((isLoading) => {
+      this.loading.set(isLoading)
+    });
 
     this.errors.set(this.email, signal(''))
     this.errors.set(this.password, signal(''))

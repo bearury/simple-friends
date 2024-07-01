@@ -11,7 +11,10 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     delay(2000),
     tap(() => {
-      if (loaderService.getLoading()) loaderService.setLoading(false)
-    })
+        if (loaderService.getLoading()) {
+          loaderService.setLoading(false)
+        }
+      }
+    )
   );
 };

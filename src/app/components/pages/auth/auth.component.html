@@ -58,10 +58,10 @@
     </div>
 
     <button
-      [disabled]="disabledButton || loaderService.getLoading()"
+      [disabled]="disabledButton || loading()"
       class="min-h-14 mt-2" mat-stroked-button type="submit"
     >
-      {{ loaderService.getLoading() ? 'Загрузка...' : isLoginPage ? 'Вход' : 'Регистрация' }}
+      {{ loading() ? 'Загрузка...' : isLoginPage ? 'Вход' : 'Регистрация' }}
     </button>
 
   </form>
