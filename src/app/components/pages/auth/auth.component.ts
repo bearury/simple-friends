@@ -7,6 +7,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {MatButtonModule} from "@angular/material/button";
 import {AuthService} from "../../../services/auth.service";
 import {Router} from "@angular/router";
+import {LoaderService} from "../../../services/loader.service";
 
 
 @Component({
@@ -29,7 +30,11 @@ export class AuthComponent {
 
   errors = new Map();
 
-  constructor(readonly authService: AuthService, readonly router: Router) {
+  constructor(
+    readonly authService: AuthService,
+    readonly router: Router,
+    readonly loaderService: LoaderService
+  ) {
     merge(this.email.statusChanges, this.email.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => this.updateErrorMessage(this.email));
