@@ -1,7 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {UserResponse} from "./types";
+import {SignInResponse, UserResponse} from "./types";
 import {tap} from "rxjs";
+import {CookieService} from "ngx-cookie-service";
 
 @Injectable({
   providedIn: 'root'
@@ -18,16 +19,30 @@ export class AuthService {
   };
 
   http = inject(HttpClient)
-  user: UserResponse | null = null
+  cookeService = inject(CookieService)
+  token: string | null = null
+
 
   get isAuth() {
-    return !!this.user?.sessionToken
+    if (!this.token) {
+      this.token = this.cookeService.get('token')
+    }
+    return !!this.token
   }
 
   login({email, password}: { email: string, password: string }) {
     return this.http.post<UserResponse>(`${this.baseUrl}/login`, {email, password}, {
       headers: this.baseHeaders
-    }).pipe(tap(data => this.user = data))
+    }).pipe(tap(data => {
+      this.token = data.sessionToken
+      this.cookeService.set('token', data.sessionToken);
+    }))
+  }
+
+  signin({email, password}: { email: string, password: string }) {
+    return this.http.post<SignInResponse>(`${this.baseUrl}/users`, {email, password, username: email.split('@')[0]}, {
+      headers: this.baseHeaders
+    }).pipe(tap(data => this.token = data.sessionToken))
   }
 
   checkAuth(token: string) {
@@ -36,6 +51,6 @@ export class AuthService {
         ...this.baseHeaders,
         'X-Parse-Session-Token': token
       }
-    }).pipe(tap(data => this.user = data))
+    }).pipe(tap(data => this.token = data.sessionToken))
   }
 }

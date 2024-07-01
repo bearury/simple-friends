@@ -7,3 +7,9 @@ export interface UserResponse {
   updatedAt: string
   username: string
 }
+
+export interface SignInResponse {
+  createdAt: string
+  objectId: string
+  sessionToken: string
+}
