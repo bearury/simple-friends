@@ -7,32 +7,46 @@ import {ProfileComponent} from "./components/pages/profile/profile.component";
 import {AuthComponent} from "./components/pages/auth/auth.component";
 import {accessGuard} from "./guards/access.guard";
 
+
+export const enum RouterPath {
+  Default = '',
+  Profile = 'profile',
+  About = 'about',
+  Login = 'login',
+  Signup = 'signup',
+  Over = '**'
+}
+
 export const routes: Routes = [
   {
-    path: '',
+    path: RouterPath.Default,
     component: LayoutComponent,
     children: [
       {
-        path: '',
+        path: RouterPath.Default,
         component: HomeComponent
       },
       {
-        path: 'profile',
+        path: RouterPath.Profile,
         component: ProfileComponent,
       }
     ],
     canActivate: [accessGuard]
   },
   {
-    path: 'about',
+    path: RouterPath.About,
     component: AboutComponent
   },
   {
-    path: 'auth',
+    path: RouterPath.Login,
     component: AuthComponent
   },
   {
-    path: '**',
+    path: RouterPath.Signup,
+    component: AuthComponent
+  },
+  {
+    path: RouterPath.Over,
     component: NotFoundComponent
   }
 ];

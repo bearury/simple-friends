@@ -1,6 +1,6 @@
 <div class="container flex items-center justify-center">
   <form (ngSubmit)="submit()" class="w-[500px] flex flex-col gap-4 px-4">
-    <div class="text-3xl font-medium">Авторизация</div>
+    <div class="text-3xl font-medium">{{ isLoginPage ? 'Авторизация' : 'Регистрация' }}</div>
     <mat-form-field>
       <mat-label>Введите email</mat-label>
       <input

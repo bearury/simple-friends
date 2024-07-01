@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -6,8 +6,9 @@ import {merge} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {MatButtonModule} from "@angular/material/button";
 import {AuthService} from "../../../services/auth.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {LoaderService} from "../../../services/loader.service";
+import {RouterPath} from "../../../app.routes";
 
 
 @Component({
@@ -18,13 +19,15 @@ import {LoaderService} from "../../../services/loader.service";
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit {
 
   readonly email = new FormControl<string | null>('', [Validators.required, Validators.email]);
   readonly password = new FormControl<string | null>('', [
     Validators.required,
     Validators.pattern(/^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/)]
   );
+
+  isLoginPage = false
 
   disabledButton = true
 
@@ -33,6 +36,7 @@ export class AuthComponent {
   constructor(
     readonly authService: AuthService,
     readonly router: Router,
+    readonly activatedRoute: ActivatedRoute,
     readonly loaderService: LoaderService
   ) {
     merge(this.email.statusChanges, this.email.valueChanges)
@@ -45,6 +49,11 @@ export class AuthComponent {
     this.errors.set(this.email, signal(''))
     this.errors.set(this.password, signal(''))
   }
+
+  ngOnInit() {
+    this.isLoginPage = this.activatedRoute.snapshot.url[0].path === RouterPath.Login;
+  }
+
 
   updateErrorMessage(form: FormControl<string | null>) {
     const error = form.hasError('required')
